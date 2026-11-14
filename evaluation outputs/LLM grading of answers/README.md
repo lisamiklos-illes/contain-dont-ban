@@ -7,3 +7,4 @@ Each grading file should record: which answer file was graded, which model did t
 | File | Answers graded | Graded by | Score |
 | :-- | :-- | :-- | :-- |
 | `ChatGPT_Grading_Nemotron_3.5_Super_VL.md` | `../raw benchmark answers/Nemotron3_5_Super_VL.md` | ChatGPT | 20/25 |
+| `ChatGPT_Grading_Grok4_7_Thinking.md` | `../raw benchmark answers/Grok4_7_Thinking.md` | ChatGPT | 20/25 |
