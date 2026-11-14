@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 0 model evaluation harness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF8FF; --card:#FFFFFF; --ink:#2B2340; --muted:#7A7190; --line:#ECE6F7;
+    --accent:#7C5CFF; --accent-2:#B9A6FF; --accent-soft:#F1ECFF;
+    --peach:#FFB38A; --mint:#5CC8B0; --pink:#FF7FA8; --sun:#FFD166; --err:#D9435B;
+    --r:18px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Nunito,ui-rounded,system-ui,sans-serif;}
+  body::before{content:"";position:fixed;inset:0;z-index:-1;
+    background:radial-gradient(600px 300px at 10% -5%,#EDE5FF 0,transparent 70%),
+               radial-gradient(500px 280px at 95% 0%,#FFE9DC 0,transparent 70%);}
+  .wrap{max-width:980px;margin:0 auto;padding:34px 22px 80px}
+  header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:26px}
+  .logo{display:flex;align-items:flex-end;gap:5px;height:44px}
+  .logo span{display:block;border-radius:50% 50% 45% 45%;animation:sing 2.4s ease-in-out infinite}
+  .logo span::after{content:"";display:block;width:38%;height:22%;margin:34% auto 0;border:2px solid transparent;border-bottom-color:rgba(43,35,64,.6);border-radius:50%}
+  @keyframes sing{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  h1{font:700 36px/1 Fredoka,Nunito,sans-serif;margin:0;letter-spacing:.2px}
+  .tag{color:var(--muted);margin:4px 0 0;font-weight:600}
+  header .spacer{flex:1}
+  .btn{border:0;border-radius:999px;padding:10px 18px;font:700 14px Nunito,sans-serif;cursor:pointer;
+       transition:transform .12s ease, box-shadow .12s ease, background .12s;}
+  .btn:active{transform:scale(.97)}
+  .btn.primary{background:var(--accent);color:#fff;box-shadow:0 6px 18px -6px rgba(124,92,255,.7)}
+  .btn.primary:hover{background:#6A47FF}
+  .btn.ghost{background:var(--accent-soft);color:var(--accent)}
+  .btn.ghost:hover{background:#E6DDFF}
+  .btn.plain{background:transparent;color:var(--muted);padding:8px 10px}
+  .btn.plain:hover{color:var(--ink)}
+  .btn.big{font-size:17px;padding:15px 30px}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 20px;margin-bottom:18px;
+        box-shadow:0 1px 0 rgba(43,35,64,.03),0 10px 30px -18px rgba(43,35,64,.25)}
+  .card h2{font:600 19px Fredoka,Nunito,sans-serif;margin:0 0 2px;display:flex;align-items:center;gap:10px}
+  .step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 13px Fredoka,sans-serif}
+  .sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+  input,select,textarea{font:15px Nunito,sans-serif;color:var(--ink);background:#FDFCFF;border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;outline:none;transition:border .12s, box-shadow .12s}
+  input:focus,select:focus,textarea:focus{border-color:var(--accent-2);box-shadow:0 0 0 4px var(--accent-soft)}
+  textarea{width:100%;resize:vertical;line-height:1.45}
+  .slots{display:flex;flex-direction:column;gap:10px}
+  .slot{display:grid;grid-template-columns:34px 1.1fr 1.2fr 1fr 1.5fr 34px;gap:10px;align-items:end;padding:12px;border-radius:14px;background:#FCFAFF;border:1.5px dashed var(--line)}
+  .slot .face{width:30px;height:30px;border-radius:50% 50% 45% 45%;align-self:center;position:relative}
+  .slot .face::before,.slot .face::after{content:"";position:absolute;top:11px;width:4px;height:4px;border-radius:50%;background:rgba(43,35,64,.7)}
+  .slot .face::before{left:9px}.slot .face::after{right:9px}
+  .slot input,.slot select{width:100%}
+  .slot .base{grid-column:2 / span 4}
+  .keybox{position:relative}
+  .keybox input{padding-right:38px}
+  .keybox button{position:absolute;right:6px;bottom:6px;border:0;background:none;cursor:pointer;color:var(--muted);font-size:15px;padding:4px}
+  .x{border:0;background:none;color:var(--muted);font-size:20px;cursor:pointer;border-radius:50%;width:32px;height:32px;margin-bottom:3px}
+  .x:hover{background:#FFE7EC;color:var(--err)}
+  .demo-badge{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:#FFF3D6;color:#9A6B00;font-size:11px;font-weight:800;text-transform:none;letter-spacing:0}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .filebtn{position:relative;overflow:hidden}
+  .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .qlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;counter-reset:q}
+  .qlist li{display:grid;grid-template-columns:30px 1fr;gap:10px;padding:11px 14px;border-radius:14px;background:#FCFAFF;border:1.5px solid var(--line)}
+  .qlist li::before{counter-increment:q;content:counter(q);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 13px Fredoka,sans-serif}
+  .qlist b{display:block;font-family:Fredoka,Nunito,sans-serif;font-weight:600}
+  .qlist span{color:var(--muted);font-size:14px}
+  .qlist.empty li{grid-template-columns:1fr;color:var(--muted)}
+  .qlist.empty li::before{display:none}
+  details{margin-top:6px}
+  summary{cursor:pointer;color:var(--muted);font-weight:700}
+  .runbar{display:flex;align-items:center;gap:16px;justify-content:center;margin:26px 0 8px;flex-wrap:wrap}
+  .hint{color:var(--muted);font-size:13px}
+  .err{background:#FFF0F3;color:var(--err);border-radius:12px;padding:10px 14px;font-weight:700;display:none;margin-top:12px}
+  /* progress */
+  .prog{height:12px;background:var(--accent-soft);border-radius:999px;overflow:hidden;margin:8px 0 18px}
+  .prog > div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--pink),var(--peach));border-radius:999px;transition:width .4s ease}
+  .board{overflow-x:auto}
+  table.g{border-collapse:separate;border-spacing:6px;min-width:100%}
+  table.g th{font:600 12px Fredoka,sans-serif;color:var(--muted);padding:0 2px;white-space:nowrap}
+  table.g th.cur{color:var(--accent)}
+  table.g td.name{white-space:nowrap;font-weight:800;padding-right:8px;font-size:14px}
+  table.g td.name i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px}
+  .cell{width:34px;height:34px;border-radius:11px;background:#F4F1FA;display:grid;place-items:center;font-size:15px;transition:background .2s, transform .2s}
+  .cell.running{background:var(--accent-soft);animation:pulse 1s ease-in-out infinite}
+  .cell.running::after{content:"";width:12px;height:12px;border-radius:50%;border:2.5px solid var(--accent);border-right-color:transparent;animation:spin .8s linear infinite}
+  .cell.done{background:#DDF5EC;color:#1E8A6A}
+  .cell.done::after{content:"✓";font-weight:900}
+  .cell.error{background:#FFE3E9;color:var(--err);cursor:help}
+  .cell.error::after{content:"!";font-weight:900}
+  @keyframes pulse{50%{transform:scale(.92)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .status-line{font-weight:700;color:var(--muted);min-height:22px}
+  .results{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px;margin-top:6px}
+  .res{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px solid var(--line);border-radius:16px;background:#FDFCFF}
+  .res .doc{width:40px;height:50px;border-radius:7px;background:#fff;border:1.5px solid var(--line);position:relative;flex:none}
+  .res .doc::before{content:"PDF";position:absolute;bottom:5px;left:0;right:0;text-align:center;font:700 9px Fredoka;color:#fff;background:var(--accent);margin:0 4px;border-radius:4px}
+  .res .doc i{position:absolute;top:7px;left:7px;width:12px;height:12px;border-radius:50%}
+  .res .meta{flex:1;min-width:0}
+  .res .meta b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .res .meta small{color:var(--muted)}
+  .res a{font-weight:800;color:var(--accent);text-decoration:none;font-size:14px}
+  .res a:hover{text-decoration:underline}
+  .confetti{position:fixed;top:-10px;width:9px;height:14px;border-radius:3px;z-index:9;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;margin-top:30px}
+  @media (max-width:760px){
+    .slot{grid-template-columns:30px 1fr 30px}
+    .slot > *:not(.face):not(.x){grid-column:2}
+    .slot .x{grid-row:1;grid-column:3}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" id="logo"></div>
+    <div>
+      <h1>Phase 0 evaluation</h1>
+      <p class="tag">Sends the benchmark questions one at a time to up to 10 models, then gives you one PDF of answers per model.</p>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn ghost" id="demoBtn">✨ Load the demo</button>
+  </header>
+
+  <section class="card">
+    <h2><span class="step">1</span>The models <span class="chip" id="slotCount">0 / 10</span></h2>
+    <p class="sub">Pick a provider, type the model ID and paste your API key. Keys stay on this computer. They are sent only to the provider and forgotten after the run.</p>
+    <div class="slots" id="slots"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn ghost" id="addSlot">+ Add a model</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="step">2</span>Background document <span class="hint" style="font-weight:600">(optional, off by default)</span></h2>
+    <p class="sub">Leave this empty for a clean benchmark run. Anything pasted here is sent as context with every question.</p>
+    <div class="row" style="margin-bottom:10px">
+      <input id="ctxTitle" placeholder="Title (shown on the PDF cover)" style="flex:1;min-width:220px">
+      <label class="btn ghost filebtn">📎 Load a .txt / .md file<input type="file" id="ctxFile" accept=".txt,.md,.markdown,text/plain"></label>
+    </div>
+    <textarea id="ctx" rows="6" placeholder="Paste the document here…"></textarea>
+    <div class="hint" id="ctxStats"></div>
+  </section>
+
+  <section class="card">
+    <h2><span class="step">3</span>Benchmark questions <span class="chip" id="qCount">0 questions</span></h2>
+    <p class="sub">Read from <code id="qFileName">benchmark_questions.txt</code> at the start of every run. To change the questions, edit that file and press Reload. Each question goes to every model, then the next one starts.</p>
+    <ol class="qlist" id="qList"></ol>
+    <div class="row" style="margin-top:4px">
+      <button class="btn plain" id="qReload" type="button">↻ Reload from file</button>
+      <span class="hint" id="qErr" style="color:var(--err)"></span>
+    </div>
+    <details>
+      <summary>Advanced settings</summary>
+      <div class="grid2" style="margin-top:12px">
+        <label class="f">Instructions for every model (system prompt)
+          <textarea id="sys" rows="3">Answer the question directly and completely. Use short headings and bullet points where they help.</textarea>
+        </label>
+        <label class="f">Max output tokens per answer
+          <input id="maxTok" type="number" value="2000" min="100" max="32000" step="100">
+        </label>
+      </div>
+    </details>
+  </section>
+
+  <div class="runbar">
+    <button class="btn primary big" id="runBtn">▶ Run</button>
+    <span class="hint" id="runHint"></span>
+  </div>
+  <div class="err" id="err"></div>
+
+  <section class="card" id="runCard" style="display:none">
+    <h2><span id="runTitle">🎶 In progress</span> <button class="btn plain" id="cancelBtn" style="margin-left:auto">Cancel</button></h2>
+    <div class="status-line" id="statusLine"></div>
+    <div class="prog"><div id="progBar"></div></div>
+    <div class="board"><table class="g" id="board"></table></div>
+  </section>
+
+  <section class="card" id="resCard" style="display:none">
+    <h2>📄 Your PDFs <a class="btn ghost" id="zipBtn" style="margin-left:auto;text-decoration:none">⬇ Download all (.zip)</a></h2>
+    <p class="sub">One PDF per model, with every answer in question order.</p>
+    <div class="results" id="results"></div>
+  </section>
+
+  <footer>Runs on your computer · keys are kept in memory only during a run · PDFs are saved in the <code>output/</code> folder</footer>
+</div>
+
+<script>
+const COLORS = ["#7C5CFF","#FFB38A","#5CC8B0","#FF7FA8","#FFD166","#6BA8FF","#B48CFF","#FF9F6B","#7ED6A5","#F48FB1"];
+const $ = id => document.getElementById(id);
+let PROVIDERS = [], MAX = 10, DEMO_KEY = null, slots = [], jobId = null, poll = null;
+
+const PLACEHOLDER = {
+  anthropic: "claude-opus-5-5", custom: "model name", openrouter: "vendor/model-name",
+};
+
+// logo: ten little singers
+COLORS.forEach((c,i)=>{const s=document.createElement("span");const d=20+((i*7)%3)*6;
+  s.style.cssText=`width:${d}px;height:${d}px;background:${c};animation-delay:${i*0.13}s`;$("logo").appendChild(s);});
+
+function newSlot(p={}){ return {provider:p.provider||"anthropic", model:p.model||"", label:p.label||"", api_key:p.api_key||"", base_url:p.base_url||""}; }
+
+function renderSlots(){
+  const box = $("slots"); box.innerHTML = "";
+  slots.forEach((s,i)=>{
+    const el = document.createElement("div"); el.className="slot";
+    const opts = PROVIDERS.map(p=>`<option value="${p.id}" ${p.id===s.provider?"selected":""}>${p.name}</option>`).join("");
+    const isDemo = DEMO_KEY && s.api_key===DEMO_KEY;
+    el.innerHTML = `
+      <div class="face" style="background:${COLORS[i%10]}"></div>
+      <label class="f">Provider<select data-k="provider">${opts}</select></label>
+      <label class="f">Model ID<input data-k="model" value="${esc(s.model)}" placeholder="${PLACEHOLDER[s.provider]||"model ID from the provider's docs"}"></label>
+      <label class="f">Name on PDF<input data-k="label" value="${esc(s.label)}" placeholder="optional"></label>
+      <label class="f">API key ${isDemo?'<span class="demo-badge">fake demo key</span>':''}
+        <span class="keybox"><input data-k="api_key" type="password" autocomplete="off" spellcheck="false" value="${esc(s.api_key)}" placeholder="paste key"><button type="button" title="Show or hide the key">👁</button></span></label>
+      <button class="x" title="Remove">×</button>
+      ${s.provider==="custom"?`<label class="f base">Base URL (OpenAI-compatible)<input data-k="base_url" value="${esc(s.base_url)}" placeholder="http://localhost:11434/v1"></label>`:""}`;
+    el.querySelectorAll("[data-k]").forEach(inp=>{
+      inp.addEventListener("input",()=>{
+        const wasDemo = DEMO_KEY && s.api_key===DEMO_KEY;
+        s[inp.dataset.k]=inp.value;
+        // re-render only when the demo badge must appear/disappear (keeps focus while typing)
+        if(inp.dataset.k==="api_key" && wasDemo !== (DEMO_KEY && s.api_key===DEMO_KEY)) renderSlots();
+      });
+      if(inp.tagName==="SELECT") inp.addEventListener("change",()=>{s.provider=inp.value; renderSlots();});
+    });
+    el.querySelector(".keybox button").onclick=e=>{const k=e.target.previousElementSibling;k.type=k.type==="password"?"text":"password";};
+    el.querySelector(".x").onclick=()=>{slots.splice(i,1); if(!slots.length) slots.push(newSlot()); renderSlots();};
+    box.appendChild(el);
+  });
+  $("slotCount").textContent = `${slots.length} / ${MAX}`;
+  $("addSlot").disabled = slots.length>=MAX;
+}
+// keep focus when re-rendering on key input: only re-render on provider change or demo-key toggle
+function esc(s){return String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+let QUESTIONS = [];
+function parseQs(){ return QUESTIONS; }
+async function loadQuestions(){
+  const j = await (await fetch("/api/questions")).json();
+  QUESTIONS = j.questions || [];
+  $("qFileName").textContent = j.file;
+  const ol = $("qList"); ol.innerHTML = ""; ol.classList.toggle("empty", !QUESTIONS.length);
+  $("qErr").textContent = j.error ? `${j.file}: ${j.error}` : "";
+  if(!QUESTIONS.length){ ol.innerHTML = `<li>No questions found in ${esc(j.file)}.</li>`; }
+  QUESTIONS.forEach(q=>{ const li=document.createElement("li");
+    li.innerHTML = `<div>${q.title?`<b>${esc(q.title)}</b>`:""}<span>${esc(q.text)}</span></div>`; ol.appendChild(li); });
+  updateCounts();
+}
+function updateCounts(){
+  const n=parseQs().length; $("qCount").textContent = `${n} question${n===1?"":"s"}`;
+  const c=$("ctx").value; $("ctxStats").textContent = c ? `${c.split(/\s+/).filter(Boolean).length.toLocaleString()} words · about ${Math.round(c.length/4).toLocaleString()} tokens sent with each question` : "";
+  const m = slots.filter(s=>s.model&&s.api_key).length;
+  $("runHint").textContent = n&&m ? `${n} × ${m} = ${n*m} calls` : "";
+}
+$("ctx").addEventListener("input",updateCounts);
+$("qReload").onclick = ()=>{ loadQuestions(); toast("Questions reloaded from file."); };
+document.addEventListener("input",updateCounts);
+
+function readFile(input, cb){ input.addEventListener("change",()=>{const f=input.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{cb(r.result,f.name); updateCounts();}; r.readAsText(f); input.value="";}); }
+readFile($("ctxFile"),(t,n)=>{$("ctx").value=t; if(!$("ctxTitle").value) $("ctxTitle").value=t.split("\n")[0].slice(0,90)||n;});
+
+$("addSlot").onclick=()=>{ if(slots.length<MAX){slots.push(newSlot()); renderSlots();} };
+
+$("demoBtn").onclick = async ()=>{
+  const d = await (await fetch("/api/demo")).json();
+  DEMO_KEY = d.demo_key;
+  slots = [newSlot({provider:"anthropic", model:"claude-opus-5-5", label:"Claude Opus 5.5", api_key:d.demo_key})];
+  renderSlots(); await loadQuestions();
+  toast("Demo loaded: Opus 5.5 with a fake key. Press Run ▶ (answers will be placeholders).");
+};
+
+function showErr(m){ const e=$("err"); e.textContent=m; e.style.display=m?"block":"none"; }
+function toast(m){ showErr(""); $("runHint").textContent=m; }
+
+$("runBtn").onclick = async ()=>{
+  showErr("");
+  const payload = {
+    models: slots.filter(s=>s.model||s.api_key),
+    context: $("ctx").value, context_title: $("ctxTitle").value,
+    system_prompt: $("sys").value, max_tokens: +$("maxTok").value || 2000,
+  };
+  const r = await fetch("/api/run",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});
+  const j = await r.json();
+  if(!r.ok){ showErr(j.error||"Something went wrong."); return; }
+  jobId = j.id; $("runBtn").disabled = true; $("runHint").textContent=""; $("runTitle").textContent="🎶 In progress"; $("cancelBtn").style.display=""; $("resCard").style.display="none";
+  $("runCard").style.display="block"; $("runCard").scrollIntoView({behavior:"smooth",block:"start"});
+  clearInterval(poll); poll = setInterval(tick, 700); tick();
+};
+
+$("cancelBtn").onclick = ()=>{ if(jobId) fetch(`/api/cancel/${jobId}`,{method:"POST"}); };
+
+async function tick(){
+  const s = await (await fetch(`/api/status/${jobId}`)).json();
+  const nQ = s.questions.length, nM = s.models.length;
+  let done=0, errs=0;
+  s.grid.forEach(row=>row.forEach(c=>{ if(c.status==="done"||c.status==="error") done++; if(c.status==="error") errs++; }));
+  $("progBar").style.width = `${Math.round(100*done/(nQ*nM))}%`;
+  const b = $("board");
+  let html = `<tr><th></th>${s.questions.map((q,i)=>`<th class="${i===s.current_q&&s.phase==="running"?"cur":""}" title="${esc(q)}">Q${i+1}</th>`).join("")}</tr>`;
+  s.models.forEach((m,mi)=>{
+    html += `<tr><td class="name"><i style="background:${COLORS[mi%10]}"></i>${esc(m.label)}</td>` +
+      s.grid[mi].map(c=>`<td><div class="cell ${c.status}" title="${esc(c.error||(c.seconds?c.seconds.toFixed(1)+"s":c.status))}"></div></td>`).join("") + "</tr>";
+  });
+  b.innerHTML = html;
+  const phaseMsg = {running:`Asking question ${s.current_q+1} of ${nQ} to ${nM} model${nM>1?"s":""}…`,
+                    pdf:"Writing the PDFs…", done:`All done! ${done-errs} answers${errs?`, ${errs} errors (hover the red cells)`:""}.`,
+                    cancelled:"Cancelled. PDFs include whatever was answered.", failed:`Run failed: ${s.error}`};
+  $("statusLine").textContent = phaseMsg[s.phase]||s.phase;
+  if(["done","cancelled","failed"].includes(s.phase)){
+    clearInterval(poll); $("runBtn").disabled=false; $("cancelBtn").style.display="none";
+    $("runTitle").textContent = s.phase==="done" ? "🎉 Done" : (s.phase==="cancelled" ? "⏹ Cancelled" : "😿 Stopped");
+    if(s.files.length) showResults(s);
+    if(s.phase==="done" && !errs) confetti();
+  } else $("cancelBtn").style.display="";
+}
+
+function showResults(s){
+  const box=$("results"); box.innerHTML="";
+  s.files.forEach((f,i)=>{
+    const m=s.models[i]; const ok=s.grid[i].filter(c=>c.status==="done").length;
+    const el=document.createElement("div"); el.className="res";
+    el.innerHTML=`<div class="doc"><i style="background:${COLORS[i%10]}"></i></div>
+      <div class="meta"><b>${esc(m.label)}</b><small>${ok}/${s.questions.length} answered · ${esc(m.model)}</small></div>
+      <div style="display:flex;flex-direction:column;gap:3px;text-align:right">
+        <a href="/api/download/${s.id}/${encodeURIComponent(f)}">⬇ Download</a>
+        <a href="/api/download/${s.id}/${encodeURIComponent(f)}?view=1" target="_blank">👀 Preview</a></div>`;
+    box.appendChild(el);
+  });
+  $("zipBtn").href=`/api/download/${s.id}/all.zip`;
+  $("zipBtn").style.display = s.files.length>1 ? "" : "none";
+  $("resCard").style.display="block";
+  setTimeout(()=>$("resCard").scrollIntoView({behavior:"smooth",block:"start"}),300);
+}
+
+function confetti(){
+  for(let i=0;i<70;i++){ const c=document.createElement("div"); c.className="confetti";
+    c.style.left=Math.random()*100+"vw"; c.style.background=COLORS[i%10];
+    c.style.animationDuration=(1.6+Math.random()*1.6)+"s"; c.style.animationDelay=(Math.random()*.4)+"s";
+    document.body.appendChild(c); setTimeout(()=>c.remove(),3800); }
+}
+
+(async ()=>{
+  const j = await (await fetch("/api/providers")).json();
+  PROVIDERS = j.providers; MAX = j.max_models;
+  slots=[newSlot()]; renderSlots(); await loadQuestions();
+})();
+</script>
+</body>
+</html>
