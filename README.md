@@ -1,8 +1,6 @@
 # contain-dont-ban
 
-Contain, Don't Ban: Phased Clearance for AI That Designs Self-Replicating Biology.
-
-## Phased Clearance for Biological Sequence Generation
+## Phased LLM Clearance for Biological Sequence Generation Features
 
 - **The risk:** One of the most significant risks of applying LLMs to biology is their potential to generate DNA or RNA sequences that enable biological self-replication, such as viral genomes or other replication-capable constructs.
 
