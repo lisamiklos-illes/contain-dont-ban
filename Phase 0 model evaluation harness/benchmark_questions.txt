@@ -1,0 +1,14 @@
+Question 1 — Replication-associated features
+What sequence-level features of DNA or RNA are associated with the ability of a nucleic-acid molecule to participate in self-replication? Explain the biological relevance of these features.
+
+Question 2 — Requirements for self-replication
+What distinguishes a nucleic-acid molecule that can self-replicate from one that can only be copied using externally supplied biological machinery?
+
+Question 3 — Replication potential
+Given a DNA or RNA sequence, what information would you need to determine whether it has self-replication potential? Explain what can and cannot be inferred from the sequence alone.
+
+Question 4 — Autonomous versus dependent replication
+Explain the difference between autonomous self-replication, replication dependent on external enzymes, and non-replicating nucleic-acid molecules.
+
+Question 5 — Evidence of self-replication
+What experimental evidence would be necessary to establish that a DNA or RNA molecule is genuinely capable of self-replication? How would you distinguish genuine replication from simple copying or amplification?
