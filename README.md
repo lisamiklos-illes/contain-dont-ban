@@ -8,4 +8,11 @@
 
 - **Technical implementation:**
 -- The **Phased Clearance MCP** is a prototype implementation of this approach. It provides a mechanism for controlling access to biological sequence-generation capabilities according to a model's clearance status.
--- **Phase 0 evaluation:** The **Phase 0 evaluation harness** automates the initial benchmarking process, assessing a model's understanding of nucleic-acid self-replication. This is the first step in a broader evaluation pathway, followed by Phase 1, Phase 2, and Phase 3 assessments involving increasingly rigorous testing and expert review. Progression through these phases determines the level of sequence-generation capability a model may access.
+-- **Phase 0 evaluation:** The **Benchmark Evaluation Harness** automates the initial benchmarking process, assessing a model's understanding of nucleic-acid self-replication. This is the first step in a broader evaluation pathway, followed by Phase 1, Phase 2, and Phase 3 assessments involving increasingly rigorous testing and expert review. Progression through these phases determines the level of sequence-generation capability a model may access.
+
+## Repository contents
+
+| Path | Contents |
+| :-- | :-- |
+| `Benchmark Evaluation Harness/WORKING PROTOTYPE/` | Tool that runs the benchmark questions against up to 10 LLMs and writes one PDF of answers per model |
+| `Benchmark Evaluation Harness/BENCHMARK OUTPUTS/` | Model answers collected so far, and gradings of those answers |
