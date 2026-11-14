@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contain, Don’t Ban: summary presentation</title>
+<!--
+EDITING GUIDE, for people and AI assistants (Claude and others)
+
+WHAT THIS FILE IS
+  The "Contain, Don't Ban" pitch deck: 12 slides in one self-contained HTML file.
+  It is the editable source for "SUMMARY PRESENTATION PLZ REVIEW.pdf" in the same folder.
+  Open it in any browser to present: click or press the right arrow for the next slide,
+  shift+click or the left arrow to go back. Add #5 to the address to open at slide 5.
+
+HOW IT IS LAID OUT (top to bottom)
+  1. VIEWER SHELL   styles that scale and page the slides. Rarely needs changes.
+  2. DECK STYLES    every class the slides use: colours, type, and one block per slide layout.
+  3. SLIDES         one <section> per slide inside <main class="deck">, in presentation order.
+                    Each is preceded by a comment with its number and id.
+  4. NAVIGATION     a small script at the very end.
+
+RULES THAT KEEP IT LOOKING RIGHT
+  - Every slide is a fixed 1920 x 1080 px canvas with 128 px padding, so content has
+    1664 x 824 px. Nothing shrinks or scrolls: text that does not fit is cut off.
+    After changing text, open the file and look at that slide.
+  - Type scale: 168 / 80 / 44 / 32 / 24 px. Nothing smaller than 24 px.
+  - Palette: ink #10201C, paper #F3EFE6, amber #F2B233. Phase colours from most
+    contained to most open: #10201C, #1D3B34, #2F5D52, #A9CBBF, #F2B233.
+  - Fonts load from Google Fonts: Barlow Condensed (headings), Public Sans (text),
+    JetBrains Mono (labels). Offline, the fallbacks are Arial and Courier New.
+  - Reuse the existing classes. To change a look everywhere, edit DECK STYLES, not one slide.
+
+COMMON EDITS
+  - Change wording:   edit the text inside the <section>. Keep the tags and classes.
+  - Add a slide:      copy a similar <section>, give it a new unique id, paste it where
+                      it belongs. The slide count updates by itself.
+  - Reorder / remove: move or delete the whole <section> (and its comment).
+  - Demo slides:      ids "demo-harness" and "demo-gateway" hold an empty <div class="frame">.
+                      Replace the placeholder <p> with an <img> (width and height set,
+                      max 1664 x 540) or a short description of the demo.
+  - class="in" with style="--i:N" staggers the entrance animation. N is the order.
+
+REGENERATE THE PDF AFTER EDITING
+  In Chrome or Edge: Print, Destination "Save as PDF", Margins "None", tick
+  "Background graphics". The page size (16:9) is already set by this file.
+  Save over "SUMMARY PRESENTATION PLZ REVIEW.pdf" and commit both files together.
+
+PROVENANCE
+  Exported on 2026-11-14 from the team's Claude Slides deck. Edits made here do not flow
+  back to that deck, and edits made there do not reach this file, so pick one as the
+  working copy.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=JetBrains+Mono:wght@500&family=Public+Sans:wght@400..700&display=swap">
+<style>
+/* ============================================================
+   1. VIEWER SHELL
+   ============================================================ */
+* { margin: 0; }
+html, body { padding: 0; background: #0A1512; }
+body { font: 32px/1.2 sans-serif; }
+.deck > section { width: 1920px; height: 1080px; box-sizing: border-box; overflow: hidden; position: relative; isolation: isolate; }
+h1 { font-size: 96px; font-weight: 600; }
+h2 { font-size: 64px; font-weight: 600; }
+h3 { font-size: 44px; font-weight: 600; }
+p, h1, h2, h3 { overflow-wrap: break-word; }
+.hud { display: none; }
+
+@media screen {
+  /* Without JavaScript the slides simply stack. */
+  .deck { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 24px 0; }
+  /* With JavaScript (class "present" on <html>): one slide at a time, scaled to the window. */
+  html.present, html.present body { height: 100%; overflow: hidden; }
+  html.present .deck { display: block; padding: 0; position: fixed; left: 50%; top: 50%; width: 1920px; height: 1080px; transform: translate(-50%, -50%) scale(var(--fit, 1)); cursor: pointer; }
+  html.present .deck > section { position: absolute; left: 0; top: 0; }
+  html.present .deck > section:not(.active) { display: none; }
+  html.present .hud { display: flex; align-items: center; gap: 10px; position: fixed; right: 14px; bottom: 10px; padding: 4px 8px; border-radius: 6px; background: rgba(10, 21, 18, .72); color: #F3EFE6; font: 14px/1 system-ui, Arial, sans-serif; opacity: .55; }
+  html.present .hud:hover { opacity: 1; }
+  .hud button { border: 0; background: none; color: inherit; font: inherit; font-size: 20px; line-height: 1; padding: 2px 6px; cursor: pointer; }
+}
+
+@page { size: 1920px 1080px; margin: 0; }
+@media print {
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { background: none; }
+  .deck > section { break-after: page; break-inside: avoid; }
+  .in { animation: none !important; }
+}
+
+/* ============================================================
+   2. DECK STYLES
+   ============================================================ */
+/* Contain, Don't Ban — shared rules.
+   Palette: ink #10201C, paper #F3EFE6, hazard amber #F2B233.
+   Phase ramp (most contained to most open): #10201C, #1D3B34, #2F5D52, #A9CBBF, #F2B233.
+   Type scale: 168 / 80 / 44 / 32 / 24. */
+
+body { font-family: 'Public Sans', Arial, sans-serif; color: #10201C; line-height: 1.35; }
+
+/* Slide shells */
+.slide { padding: 128px; display: flex; flex-direction: column; }
+.light { background: #F3EFE6; color: #10201C; }
+.dark { background: #10201C; color: #F3EFE6; }
+.amber { background: #F2B233; color: #10201C; }
+.center { justify-content: center; }
+.spacer { flex: 1; }
+
+/* Shared type */
+.eyebrow { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; line-height: 1.3; color: #8A5A00; }
+.dark .eyebrow { color: #F2B233; }
+.amber .eyebrow { color: #10201C; }
+.title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 80px; font-weight: 600; line-height: 1.05; margin-top: 16px; }
+.lead { font-size: 32px; line-height: 1.35; margin-top: 32px; color: #4B5B56; }
+.col-h { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; line-height: 1.3; color: #4B5B56; }
+.note { font-size: 24px; line-height: 1.35; color: #4B5B56; }
+.byline { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 1px; line-height: 1.3; color: #C9D9D2; }
+
+/* Arrival motion: the plain rule is the finished look */
+@keyframes rise { from { opacity: 0; transform: translateY(20px); } }
+.in { animation: rise .45s ease-out both; animation-delay: calc(var(--i, 0) * 90ms); }
+
+/* Cover */
+.rings { position: absolute; right: 128px; top: 220px; }
+.cover-title { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 168px; font-weight: 700; line-height: .95; text-transform: uppercase; margin-top: 28px; width: 980px; color: #F3EFE6; }
+.cover-accent { color: #F2B233; }
+.cover-sub { font-size: 44px; line-height: 1.25; margin-top: 36px; width: 900px; color: #C9D9D2; }
+
+/* The argument: five lines */
+.lines { flex: 1; margin-top: 48px; display: flex; flex-direction: column; }
+.line { flex: 1; display: flex; align-items: center; gap: 40px; padding: 0 32px; border-top: 2px solid #CFC7B6; }
+.line-last { border-bottom: 2px solid #CFC7B6; }
+.line-n { width: 48px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 32px; font-weight: 500; line-height: 1.3; color: #8A5A00; }
+.line-h { width: 600px; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; }
+.line-p { flex: 1; font-size: 32px; line-height: 1.35; color: #4B5B56; }
+.line-key { background: #F2B233; border-top: 2px solid #F2B233; }
+.line-key .line-n { color: #10201C; }
+.line-key .line-p { color: #10201C; }
+
+/* The rule (amber statement) */
+.shout { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 168px; font-weight: 700; line-height: .95; text-transform: uppercase; margin-top: 28px; }
+.rule-full { font-size: 44px; font-weight: 600; line-height: 1.25; margin-top: 48px; width: 1320px; }
+
+/* Scope: three paths */
+.paths { margin-top: 36px; display: grid; grid-template-columns: 600px 560px 1fr; }
+.ph { padding-bottom: 12px; }
+.pc { border-top: 2px solid #CFC7B6; padding: 20px 32px 20px 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.pc-last { border-bottom: 2px solid #CFC7B6; }
+.pc-h { font-size: 32px; font-weight: 600; line-height: 1.3; }
+.pc-s { font-size: 24px; line-height: 1.35; color: #4B5B56; }
+.track { display: flex; align-items: center; }
+.chip { width: 52px; height: 52px; box-sizing: border-box; border-radius: 50%; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; line-height: 52px; text-align: center; }
+.c0 { background: #10201C; color: #F3EFE6; }
+.c1 { background: #1D3B34; color: #F3EFE6; }
+.c2 { background: #2F5D52; color: #F3EFE6; }
+.c3 { background: #A9CBBF; color: #10201C; }
+.c-skip { border: 2px dashed #6E7F79; color: #4B5B56; line-height: 48px; }
+.tl { width: 32px; height: 4px; background: #10201C; }
+.tl-skip { width: 32px; height: 0; border-top: 4px dashed #6E7F79; }
+.chip-end { height: 52px; box-sizing: border-box; padding: 0 18px; background: #F2B233; color: #10201C; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; line-height: 52px; }
+.notes { margin-top: 32px; display: flex; gap: 48px; }
+.note-col { flex: 1; }
+
+/* Phases: five bands */
+.bands-head { margin-top: 40px; padding: 0 32px 12px; display: flex; gap: 32px; }
+.bh-1 { width: 540px; }
+.bh-2 { width: 500px; }
+.bh-3 { flex: 1; }
+.bands { flex: 1; display: flex; flex-direction: column; }
+.band { flex: 1; display: flex; align-items: center; gap: 32px; padding: 0 32px; }
+.band-n { width: 88px; font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 80px; font-weight: 600; line-height: 1; }
+.band-icon { width: 88px; display: flex; }
+.band-name { width: 420px; }
+.band-h { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; white-space: nowrap; }
+.band-s { font-size: 24px; line-height: 1.3; opacity: .82; }
+.band-run { width: 500px; font-size: 32px; line-height: 1.3; }
+.band-who { flex: 1; font-size: 32px; font-weight: 600; line-height: 1.3; }
+.b0 { background: #10201C; color: #F3EFE6; }
+.b1 { background: #1D3B34; color: #F3EFE6; }
+.b2 { background: #2F5D52; color: #F3EFE6; }
+.b3 { background: #A9CBBF; color: #10201C; }
+.b4 { background: #F2B233; color: #10201C; }
+.b0 .band-n { color: #F2B233; }
+.b1 .band-n { color: #F2B233; }
+.b2 .band-n { color: #F2B233; }
+
+/* Demo placeholders */
+.demo-line { font-size: 32px; line-height: 1.35; margin-top: 16px; width: 1500px; color: #C9D9D2; }
+.frame { height: 540px; margin-top: auto; box-sizing: border-box; border: 3px dashed #F2B233; background: #16302A; display: flex; align-items: center; justify-content: center; }
+.frame-label { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 1px; line-height: 1.3; color: #C9D9D2; }
+
+/* Gates */
+.gates { margin-top: 40px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.gate { box-sizing: border-box; background: #FBF9F3; border: 2px solid #CFC7B6; padding: 24px; display: flex; flex-direction: column; }
+.gate-tag { align-self: flex-start; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; line-height: 1.3; padding: 6px 14px; }
+.t1 { background: #1D3B34; color: #F3EFE6; }
+.t2 { background: #2F5D52; color: #F3EFE6; }
+.t3 { background: #A9CBBF; color: #10201C; }
+.t4 { background: #F2B233; color: #10201C; }
+.gate-who { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; margin-top: 20px; min-height: 98px; }
+.gate-l { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; line-height: 1.3; color: #4B5B56; margin-top: 16px; }
+.gate-adds { font-size: 32px; line-height: 1.3; margin-top: 6px; }
+.stats { margin-top: 28px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.stat { border-top: 4px solid #10201C; padding-top: 12px; }
+.stat-n { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 80px; font-weight: 600; line-height: 1; }
+.stat-c { font-size: 24px; line-height: 1.35; color: #4B5B56; margin-top: 8px; }
+
+/* Signals: big numbers */
+.bigs { margin-top: 28px; display: flex; gap: 64px; }
+.big { flex: 1; border-top: 4px solid #10201C; padding-top: 20px; }
+.big-n { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 168px; font-weight: 600; line-height: 1; }
+.big-accent { color: #8A5A00; }
+.big-c { font-size: 32px; line-height: 1.35; color: #4B5B56; margin-top: 8px; }
+.sub-h { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; margin-top: 48px; }
+.pills { margin-top: 20px; display: flex; gap: 16px; }
+.pill { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; line-height: 1.3; padding: 12px 22px; border: 2px solid #10201C; }
+.note-gap { margin-top: 24px; }
+
+/* Enforcement: pipeline and two chokepoints */
+.pipe { margin-top: 48px; display: flex; align-items: stretch; gap: 20px; }
+.pgate { width: 320px; box-sizing: border-box; background: #F2B233; padding: 24px 28px; display: flex; flex-direction: column; justify-content: center; }
+.pgate-l { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; line-height: 1.3; }
+.pgate-h { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; margin-top: 4px; white-space: nowrap; }
+.pnode { flex: 1; box-sizing: border-box; border: 2px solid #10201C; padding: 24px; display: flex; flex-direction: column; justify-content: center; }
+.pnode-h { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; }
+.pnode-s { font-size: 24px; line-height: 1.3; color: #4B5B56; margin-top: 4px; }
+.chokes { margin-top: 32px; display: flex; gap: 32px; }
+.choke { flex: 1; box-sizing: border-box; background: #FBF9F3; border: 2px solid #CFC7B6; padding: 28px 32px; }
+.choke-tag { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; line-height: 1.3; color: #8A5A00; }
+.choke-p { font-size: 32px; line-height: 1.3; margin-top: 12px; }
+.choke-n { font-size: 24px; line-height: 1.35; color: #4B5B56; margin-top: 12px; }
+.note-top { margin-top: 28px; }
+
+/* Bio login */
+.login { margin-top: 48px; display: flex; gap: 64px; }
+.login-why { width: 500px; }
+.login-n { margin-top: 12px; }
+.login-c { font-size: 32px; line-height: 1.35; color: #4B5B56; margin-top: 12px; }
+.login-map { flex: 1; }
+.svc-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.svc { box-sizing: border-box; border: 2px solid #10201C; padding: 28px 8px; text-align: center; font-size: 32px; font-weight: 600; line-height: 1.3; }
+.svc-alt { background: #A9CBBF; }
+.stub-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.stub-cell { display: flex; justify-content: center; }
+.stub { width: 4px; height: 40px; background: #10201C; }
+.bus { background: #F2B233; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; }
+.bus-h { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; }
+.bus-s { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 1px; line-height: 1.3; }
+.facts { margin-top: 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.fact { font-size: 32px; line-height: 1.3; }
+.prec { margin-top: auto; border-top: 2px solid #CFC7B6; padding-top: 24px; font-size: 32px; line-height: 1.35; color: #4B5B56; }
+
+/* Limits and close */
+.limits { margin-top: 48px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+.limit { border-top: 2px solid #4A6860; padding-top: 24px; }
+.limit-n { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 24px; font-weight: 500; letter-spacing: 2px; line-height: 1.3; color: #F2B233; }
+.limit-h { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 44px; font-weight: 600; line-height: 1.1; margin-top: 12px; }
+.limit-p { font-size: 32px; line-height: 1.35; color: #C9D9D2; margin-top: 12px; }
+.close-q { font-family: 'Barlow Condensed', Arial, sans-serif; font-size: 80px; font-weight: 600; line-height: 1.05; color: #F2B233; }
+.close-by { margin-top: 16px; }
+
+/* ============================================================
+   Layout behaviour carried over from the original slide tool
+   ============================================================ */
+/* The cover's ring drawing sits behind the text. */
+.rings { z-index: -1; }
+/* Rows that share a column may shrink to fit the slide height. */
+.lines, .line, .bands, .band, .spacer, .line-p, .band-who, .bh-3, .note-col, .pnode, .choke, .big, .login-map { min-height: 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     3. SLIDES
+     ============================================================ -->
+<main class="deck">
+
+<!-- ===== SLIDE 1 of 12 : id="cover" ===== -->
+<section id="cover" class="slide dark" data-transition="fade">
+<svg class="rings in" style="--i:2" width="640" height="640" viewBox="0 0 640 640" aria-label="A model at the centre of four nested containment rings, with a gate through each ring on the way out">
+<circle cx="320" cy="320" r="300" fill="none" stroke="#A9CBBF" stroke-width="2" stroke-dasharray="2 12" stroke-linecap="round" opacity="0.6"/>
+<circle cx="320" cy="320" r="225" fill="none" stroke="#A9CBBF" stroke-width="3" opacity="0.7"/>
+<circle cx="320" cy="320" r="150" fill="none" stroke="#A9CBBF" stroke-width="5" opacity="0.85"/>
+<circle cx="320" cy="320" r="75" fill="none" stroke="#F3EFE6" stroke-width="8"/>
+<line x1="342" y1="320" x2="632" y2="320" stroke="#F2B233" stroke-width="2"/>
+<rect x="391" y="304" width="8" height="32" fill="#F2B233"/>
+<rect x="466" y="304" width="8" height="32" fill="#F2B233"/>
+<rect x="541" y="304" width="8" height="32" fill="#F2B233"/>
+<rect x="616" y="304" width="8" height="32" fill="#F2B233"/>
+<circle cx="320" cy="320" r="20" fill="#F2B233"/>
+</svg>
+<p class="eyebrow in" style="--i:0">Phased clearance framework</p>
+<h1 class="cover-title in" style="--i:1"><span class="cover-accent">Contain,</span><br>Don’t Ban</h1>
+<p class="cover-sub in" style="--i:2">Phased clearance for AI that designs self-replicating biology</p>
+<div class="spacer"></div>
+<p class="byline">Syrine Ben Ayed, Zoumana Cissé, Stepan Tymoshenko, Lisa Miklós-Illes · DNA Forge Hackathon · November 2026</p>
+</section>
+
+<!-- ===== SLIDE 2 of 12 : id="argument" ===== -->
+<section id="argument" class="slide light" data-transition="fade">
+<p class="eyebrow">OVERVIEW</p>
+<h2 style="flex:0 0 auto; padding:16px 0 0; font-family:'Barlow Condensed', Arial, sans-serif; font-size:80px; font-weight:600; line-height:1.05; margin:0" class="title">Contain Don't Ban (CDB) is a tech stack and regulatory framework focused on LLMs that can make viruses</h2>
+<div class="lines">
+<div class="line in" style="--i:0">
+<p class="line-n">1</p>
+<h3 class="line-h">A new virus could literally kill us all</h3>
+<p class="line-p">A self-replicating biological agent (e.g., a virus), once out in the world, can cause unprecedented levels of damage.</p>
+</div>
+<div class="line in" style="--i:1">
+<p class="line-n">2</p>
+<h3 class="line-h">The likeliest cause is an accident.</h3>
+<p class="line-p">A well-intentioned expert may accidentally create a highly dangerous self-replicating biological agent using an LLM.</p>
+</div>
+<div class="line in" style="--i:2">
+<p class="line-n">3</p>
+<h3 class="line-h">Banning virus creation won't work</h3>
+<p class="line-p">Banning the LLM capability of self-replicating biological agent creation is futile, humans will do what they want.</p>
+</div>
+<div class="line line-key in" style="--i:3">
+<p class="line-n">4</p>
+<h3 class="line-h">We can, however, control the rollout</h3>
+<p class="line-p"><b>CDB is a phased clearance framework and incentive framework to control virus-creating-LLM rollouts.</b></p>
+</div>
+<div class="line line-last in" style="--i:4">
+<p class="line-n">5</p>
+<h3 class="line-h">Controlled rollout is focused only on virus-creation capabilities</h3>
+<p class="line-p">Contain Don't Ban is focused ONLY on an LLM's capacity to generate self-replicating DNA/RNA sequences.</p>
+</div>
+</div>
+</section>
+
+<!-- ===== SLIDE 3 of 12 : id="rule" ===== -->
+<section id="rule" class="slide amber center" data-transition="fade">
+<p class="eyebrow in" style="--i:0">THE PRIMARY INCENTIVE</p>
+<h1 class="shout in" style="--i:1">MODEL DEVELOPERS NEED TO PARTICIPATE TO ACCESS<br>TOP TIER TRAINING CHIPS</h1>
+<p class="rule-full in" style="--i:3">LLM model developers are incentivized to participate because access to top tier training chips depends on it.</p>
+</section>
+
+<!-- ===== SLIDE 4 of 12 : id="scope" ===== -->
+<section id="scope" class="slide light" data-transition="fade">
+<p class="eyebrow">Scope</p>
+<h2 class="title">What a novel LLM can generate sets its clearance path</h2>
+<p class="lead">In scope: any model, LLMs included, that can return biological sequences not found in nature.</p>
+<div class="paths">
+<p class="col-h ph">What the model generates</p>
+<p class="col-h ph">Path through the phases</p>
+<p class="col-h ph">Widest audience</p>
+<div class="pc">
+<p class="pc-h">Replicating DNA/RNA sequences</p>
+<p class="pc-s">Novel sequences with replication potential</p>
+</div>
+<div class="pc">
+<div class="track">
+<p class="chip c0">0</p><div class="tl"></div><p class="chip c1">1</p><div class="tl"></div><p class="chip c2">2</p><div class="tl"></div><p class="chip c3">3</p><div class="tl"></div><p class="chip-end">Public</p>
+</div>
+<p class="pc-s">Every phase in order. No skipping.</p>
+</div>
+<div class="pc">
+<p class="pc-h">The public</p>
+<p class="pc-s">if the evidence supports it</p>
+</div>
+<div class="pc">
+<p class="pc-h">Non-replicating, fast track</p>
+<p class="pc-s">Novel sequences without replication potential</p>
+</div>
+<div class="pc">
+<div class="track">
+<p class="chip c0">0</p><div class="tl-skip"></div><p class="chip c-skip">1</p><div class="tl-skip"></div><p class="chip c2">2</p>
+</div>
+<p class="pc-s">Phase 0, then straight to Phase 2. Skips BSL-4.</p>
+</div>
+<div class="pc">
+<p class="pc-h">BSL-3 facilities</p>
+<p class="pc-s">going public still takes Phases 1, 2 and 3</p>
+</div>
+<div class="pc pc-last">
+<p class="pc-h">Non-replicating, public release</p>
+<p class="pc-s">Without replication potential, seeking public release</p>
+</div>
+<div class="pc pc-last">
+<div class="track">
+<p class="chip c0">0</p><div class="tl"></div><p class="chip c1">1</p><div class="tl"></div><p class="chip c2">2</p><div class="tl"></div><p class="chip c3">3</p><div class="tl"></div><p class="chip-end">Public</p>
+</div>
+<p class="pc-s">Phase 0, then Phases 1, 2 and 3.</p>
+</div>
+<div class="pc pc-last">
+<p class="pc-h">The public</p>
+<p class="pc-s">if the evidence supports it</p>
+</div>
+</div>
+<div class="notes">
+<p class="note note-col"><b>Who decides:</b> an expert panel keeps a list of sequence features that signal replication potential, and reviews it quarterly.</p>
+<p class="note note-col"><b>Default:</b> anything the list does not yet cover is treated as replicating until the next review.</p>
+</div>
+</section>
+
+<!-- ===== SLIDE 5 of 12 : id="phases" ===== -->
+<section id="phases" class="slide light" data-transition="fade">
+<p class="eyebrow">The phases</p>
+<h2 class="title">Each phase pairs an audience with a container</h2>
+<div class="bands-head">
+<p class="col-h bh-1">Phase</p>
+<p class="col-h bh-2">Where the model runs</p>
+<p class="col-h bh-3">Who can use it</p>
+</div>
+<div class="bands">
+<div class="band b0 in" style="--i:0">
+<p class="band-n">0</p>
+<div class="band-name">
+<h3 class="band-h">Certification</h3>
+<p class="band-s">Held-back biology benchmarks</p>
+</div>
+<p class="band-run">Test environments only</p>
+<p class="band-who">No users</p>
+</div>
+<div class="band b1 in" style="--i:1">
+<p class="band-n">1</p>
+<div class="band-name">
+<h3 class="band-h">BSL-4</h3>
+<p class="band-s">Maximum containment</p>
+</div>
+<p class="band-run">Air-gapped server inside a BSL-4 lab, no internet</p>
+<p class="band-who">BSL-4 professional infectious disease biologists</p>
+</div>
+<div class="band b2 in" style="--i:2">
+<p class="band-n">2</p>
+<div class="band-name">
+<h3 class="band-h">BSL-3</h3>
+<p class="band-s">Live tools and data, more users</p>
+</div>
+<p class="band-run">Closed container with internet access</p>
+<p class="band-who">BSL-3 professional infectious disease biologists</p>
+</div>
+<div class="band b3 in" style="--i:3">
+<p class="band-n">3</p>
+<div class="band-name">
+<h3 class="band-h">Accredited individuals</h3>
+<p class="band-s">Outside high-containment labs</p>
+</div>
+<p class="band-run">Closed container</p>
+<p class="band-who">Verified identity plus a biology background</p>
+</div>
+<div class="band b4 in" style="--i:4">
+<div class="band-icon"><svg width="72" height="72" viewBox="0 0 72 72" aria-hidden="true"><g fill="none" stroke="#10201C" stroke-width="3"><circle cx="36" cy="36" r="18"/><ellipse cx="36" cy="36" rx="8" ry="18"/><path d="M18 36H54"/></g></svg></div>
+<div class="band-name">
+<h3 class="band-h">Public</h3>
+<p class="band-s">Full clearance</p>
+</div>
+<p class="band-run">Open release</p>
+<p class="band-who">The public, with a bio login for novel sequences</p>
+</div>
+</div>
+</section>
+
+<!-- ===== SLIDE 6 of 12 : id="demo-harness" ===== -->
+<section id="demo-harness" class="slide dark" data-transition="fade">
+<p class="eyebrow">Live demo · Phase 0</p>
+<h2 class="title">Demo: Phase 0 benchmark evaluation harness</h2>
+<p class="demo-line">Benchmark questions run against multiple models, before any user gets access.</p>
+<div class="frame">
+<p class="frame-label">[ Demo placeholder: drop a screenshot or recording here ]</p>
+</div>
+</section>
+
+<!-- ===== SLIDE 7 of 12 : id="gates" ===== -->
+<section id="gates" class="slide light" data-transition="fade">
+<p class="eyebrow">Moving between phases</p>
+<h2 class="title">Testers sign off before a model moves up</h2>
+<div class="gates">
+<div class="gate in" style="--i:0">
+<p class="gate-tag t1">Gate 0 → 1</p>
+<h3 class="gate-who">The regulator’s in-house biologists</h3>
+<p class="gate-l">Next phase adds</p>
+<p class="gate-adds">First hands-on use by people</p>
+</div>
+<div class="gate in" style="--i:1">
+<p class="gate-tag t2">Gate 1 → 2</p>
+<h3 class="gate-who">BSL-4 testers</h3>
+<p class="gate-l">Next phase adds</p>
+<p class="gate-adds">Internet access, more users, lower containment</p>
+</div>
+<div class="gate in" style="--i:2">
+<p class="gate-tag t3">Gate 2 → 3</p>
+<h3 class="gate-who">BSL-3 testers</h3>
+<p class="gate-l">Next phase adds</p>
+<p class="gate-adds">Users outside high-containment labs</p>
+</div>
+<div class="gate in" style="--i:3">
+<p class="gate-tag t4">Gate 3 → Public</p>
+<h3 class="gate-who">Accredited testers</h3>
+<p class="gate-l">Next phase adds</p>
+<p class="gate-adds">Users with no training or facilities</p>
+</div>
+</div>
+<div class="stats">
+<div class="stat">
+<p class="stat-n">5+</p>
+<p class="stat-c">evaluators at every gate, chosen and paid through the international body, not the developer</p>
+</div>
+<div class="stat">
+<p class="stat-n">3 of 5</p>
+<p class="stat-c">is enough to move a model forward: each gate is decided by simple majority</p>
+</div>
+<div class="stat">
+<p class="stat-n">3</p>
+<p class="stat-c">outcomes: forward, hold, or back one phase. A hold can be the final answer</p>
+</div>
+<div class="stat">
+<p class="stat-n">By name</p>
+<p class="stat-c">each evaluator signs personally, against criteria registered before the phase starts</p>
+</div>
+</div>
+</section>
+
+<!-- ===== SLIDE 8 of 12 : id="signals" ===== -->
+<section id="signals" class="slide light" data-transition="fade">
+<p class="eyebrow">What the gates measure</p>
+<h2 class="title">Confirmed virus-creating LLM misuse is too rare to count</h2>
+<p class="lead">If the true misuse rate is 1 in 100,000, a gate would need about:</p>
+<div class="bigs">
+<div class="big in" style="--i:0">
+<p class="big-n">300,000</p>
+<p class="big-c">users to see one confirmed case</p>
+</div>
+<div class="big in" style="--i:2">
+<p class="big-n big-accent">5 million</p>
+<p class="big-c">users at a realistic 6% detection rate</p>
+</div>
+</div>
+<h3 class="sub-h">So the rules run on proxy signals that fire often</h3>
+<div class="pills">
+<p class="pill">Classifier flags</p>
+<p class="pill">Cross-session cluster alerts</p>
+<p class="pill">Red-team scores</p>
+<p class="pill">Safeguard bypasses</p>
+</div>
+<p class="note note-gap">Each gate publishes a power calculation: how many users and weeks before a rule could fire.</p>
+</section>
+
+<!-- ===== SLIDE 9 of 12 : id="enforcement" ===== -->
+<section id="enforcement" class="slide light" data-transition="fade">
+<p class="eyebrow">Enforcement</p>
+<h2 class="title">Enforcement runs through two chokepoints</h2>
+<div class="pipe">
+<div class="pgate in" style="--i:0">
+<p class="pgate-l">Chokepoint 1</p>
+<h3 class="pgate-h">Training chips</h3>
+</div>
+<svg width="44" height="22" viewBox="0 0 44 22" style="align-self:center; flex:none" aria-hidden="true"><path d="M0 6.6H26.4V0L44 11 26.4 22V15.4H0Z" fill="#10201C"/></svg>
+<div class="pnode in" style="--i:1">
+<h3 class="pnode-h">Train</h3>
+<p class="pnode-s">a model gets built</p>
+</div>
+<svg width="44" height="22" viewBox="0 0 44 22" style="align-self:center; flex:none" aria-hidden="true"><path d="M0 6.6H26.4V0L44 11 26.4 22V15.4H0Z" fill="#10201C"/></svg>
+<div class="pnode in" style="--i:2">
+<h3 class="pnode-h">Design</h3>
+<p class="pnode-s">it returns a sequence</p>
+</div>
+<svg width="44" height="22" viewBox="0 0 44 22" style="align-self:center; flex:none" aria-hidden="true"><path d="M0 6.6H26.4V0L44 11 26.4 22V15.4H0Z" fill="#10201C"/></svg>
+<div class="pgate in" style="--i:3">
+<p class="pgate-l">Chokepoint 2</p>
+<h3 class="pgate-h">DNA synthesis</h3>
+</div>
+<svg width="44" height="22" viewBox="0 0 44 22" style="align-self:center; flex:none" aria-hidden="true"><path d="M0 6.6H26.4V0L44 11 26.4 22V15.4H0Z" fill="#10201C"/></svg>
+<div class="pnode in" style="--i:4">
+<h3 class="pnode-h">Make</h3>
+<p class="pnode-s">the design becomes physical</p>
+</div>
+</div>
+<div class="chokes">
+<div class="choke">
+<p class="choke-tag">1 · Training chips</p>
+<p class="choke-p">Developers who refuse continuous audits lose access to training chips. Exporting governments tie chip licences to certification.</p>
+<p class="choke-n">Limit: bio-design models can be small, so chips alone are not enough.</p>
+</div>
+<div class="choke">
+<p class="choke-tag">2 · DNA synthesis</p>
+<p class="choke-p">Synthesis vendors require the same bio login as the models. A design from an unregistered model is much harder to make real.</p>
+<p class="choke-n">The physical step every design has to pass through.</p>
+</div>
+</div>
+<p class="note note-top">Audits run continuously under a new WHO component that borrows accreditation, inspection and reporting from the IAEA.</p>
+</section>
+
+<!-- ===== SLIDE 10 of 12 : id="login" ===== -->
+<section id="login" class="slide light" data-transition="fade">
+<p class="eyebrow">After approval</p>
+<h2 class="title">After approval, one login links all virus-creation signals across platforms</h2>
+<div class="login">
+<div class="login-why">
+<p class="col-h">Why one identity</p>
+<p class="big-n login-n">50.6%</p>
+<p class="login-c">misuse success on GPT-5 when attackers split a task into innocent-looking pieces, up from 1.3% (Brown et al.).</p>
+</div>
+<div class="login-map">
+<div class="svc-row">
+<p class="svc in" style="--i:0">Model A</p>
+<p class="svc in" style="--i:1">Model B</p>
+<p class="svc in" style="--i:2">Model C</p>
+<p class="svc svc-alt in" style="--i:3">DNA vendor</p>
+</div>
+<div class="stub-row">
+<div class="stub-cell"><div class="stub"></div></div>
+<div class="stub-cell"><div class="stub"></div></div>
+<div class="stub-cell"><div class="stub"></div></div>
+<div class="stub-cell"><div class="stub"></div></div>
+</div>
+<div class="bus in" style="--i:4">
+<h3 class="bus-h">One bio login</h3>
+<p class="bus-s">Required to generate novel sequences</p>
+</div>
+<div class="facts">
+<p class="fact"><b>Links</b> one user’s sequence requests across models, and their vendor orders.</p>
+<p class="fact"><b>Logs</b> sequence generation only. Other biology questions stay open.</p>
+<p class="fact"><b>Pauses</b> a flagged user’s access at every participating model and vendor.</p>
+</div>
+</div>
+</div>
+<p class="prec">Precedent: iPLEDGE, where prescriber, pharmacy and patient must all be in one registry before a high-risk drug is dispensed.</p>
+</section>
+
+<!-- ===== SLIDE 11 of 12 : id="demo-gateway" ===== -->
+<section id="demo-gateway" class="slide dark" data-transition="fade">
+<p class="eyebrow">Live demo · Gateway</p>
+<h2 class="title">Demo: Phased Clearance Gateway MCP</h2>
+<p class="demo-line">Gates sequence requests, sets which tools the AI can use in each phase, runs the rules that move a model between phases, and records everything in the audit log.</p>
+<div class="frame">
+<p class="frame-label">[ Demo placeholder: drop a screenshot or recording here ]</p>
+</div>
+</section>
+
+<!-- ===== SLIDE 12 of 12 : id="limits" ===== -->
+<section id="limits" class="slide dark" data-transition="fade">
+<p class="eyebrow">Limits</p>
+<h2 class="title">The framework states its own limits</h2>
+<div class="limits">
+<div class="limit in" style="--i:0">
+<p class="limit-n">01</p>
+<h3 class="limit-h">It raises the bar</h3>
+<p class="limit-p">The controls raise the resources and process complexity needed to create a self-replicating agent. They do not make it impossible.</p>
+</div>
+<div class="limit in" style="--i:1">
+<p class="limit-n">02</p>
+<h3 class="limit-h">Open weights are the hard case</h3>
+<p class="limit-p">Safeguards do not travel with the weights, so releasing weights requires full clearance, decided on pre-release trials.</p>
+</div>
+<div class="limit in" style="--i:2">
+<p class="limit-n">03</p>
+<h3 class="limit-h">Slow review has a condition</h3>
+<p class="limit-p">Open models trail the frontier by about 4 months (Epoch). Slowing the frontier only helps if weight release is gated too.</p>
+</div>
+</div>
+<div class="spacer"></div>
+<p class="close-q">Partial protection is better than none.</p>
+<p class="byline close-by">Contain, Don’t Ban · Syrine Ben Ayed, Zoumana Cissé, Stepan Tymoshenko, Lisa Miklós-Illes · https://github.com/lisamiklos-illes/contain-dont-ban</p>
+</section>
+
+</main>
+
+<nav class="hud" aria-label="Slide navigation">
+<button type="button" id="prev" aria-label="Previous slide">‹</button>
+<span id="count"></span>
+<button type="button" id="next" aria-label="Next slide">›</button>
+</nav>
+
+<!-- ============================================================
+     4. NAVIGATION
+     ============================================================ -->
+<script>
+(function () {
+  var root = document.documentElement;
+  var stage = document.querySelector('.deck');
+  var slides = [].slice.call(document.querySelectorAll('.deck > section'));
+  var count = document.getElementById('count');
+  var at = 0;
+  function go(n) {
+    at = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('active', k === at); });
+    count.textContent = (at + 1) + ' / ' + slides.length;
+    try { history.replaceState(null, '', '#' + (at + 1)); } catch (e) {}
+  }
+  function fit() {
+    root.style.setProperty('--fit', Math.min(window.innerWidth / 1920, window.innerHeight / 1080));
+  }
+  function fromHash() { return (parseInt(location.hash.slice(1), 10) || 1) - 1; }
+  document.addEventListener('keydown', function (e) {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].indexOf(e.key) > -1) { e.preventDefault(); go(at + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].indexOf(e.key) > -1) { e.preventDefault(); go(at - 1); }
+    else if (e.key === 'Home') { go(0); }
+    else if (e.key === 'End') { go(slides.length - 1); }
+  });
+  stage.addEventListener('click', function (e) {
+    if (e.target.closest('a') || String(window.getSelection())) return;
+    go(at + (e.shiftKey ? -1 : 1));
+  });
+  document.getElementById('prev').addEventListener('click', function () { go(at - 1); });
+  document.getElementById('next').addEventListener('click', function () { go(at + 1); });
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', function () { go(fromHash()); });
+  root.classList.add('present');
+  fit();
+  go(fromHash());
+})();
+</script>
+</body>
+</html>
