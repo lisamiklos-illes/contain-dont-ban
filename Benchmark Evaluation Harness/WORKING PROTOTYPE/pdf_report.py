@@ -252,7 +252,7 @@ def _decorate(model_label):
         canv.rect(0, h - 6, w * 0.18, 6, stroke=0, fill=1)
         canv.setFont("Head-Regular", 7.5)
         canv.setFillColor(MUTED)
-        canv.drawString(inch, 0.55 * inch, f"Phase 0 evaluation  ·  {model_label}")
+        canv.drawString(inch, 0.55 * inch, f"Benchmark Evaluation Harness  ·  {model_label}")
         canv.drawRightString(w - inch, 0.55 * inch, f"{doc.page}")
         canv.restoreState()
 
@@ -261,7 +261,7 @@ def _decorate(model_label):
         w, h = LETTER
         canv.setFillColor(ACCENT_SOFT)
         canv.rect(0, 0, w, h, stroke=0, fill=1)
-        # a little row of chorus "voices": dots of varying size
+        # a little row of "voices": dots of varying size, one per model slot
         palette = ["#7C5CFF", "#FFB38A", "#5CC8B0", "#FF7FA8", "#FFD166",
                    "#6BA8FF", "#B48CFF", "#FF9F6B", "#7ED6A5", "#F48FB1"]
         x = inch
@@ -289,7 +289,7 @@ def build_pdf(path, model, questions, results, meta):
 
     doc = BaseDocTemplate(path, pagesize=LETTER, leftMargin=inch, rightMargin=inch,
                           topMargin=0.9 * inch, bottomMargin=0.9 * inch,
-                          title=f"Phase 0 evaluation: {label}", author="Phase 0 model evaluation harness")
+                          title=f"Benchmark answers: {label}", author="Benchmark Evaluation Harness")
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="f",
                   leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)
     doc.addPageTemplates([PageTemplate("cover", [frame], onPage=on_cover),
