@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Phase 0 model evaluation harness (built on Chorus).
+Benchmark Evaluation Harness.
 
 Reads the benchmark questions from benchmark_questions.txt, sends them one at a
 time to up to 10 LLMs in parallel, and writes one PDF of answers per model.
@@ -124,7 +124,7 @@ def call_model(slot, system, question, max_tokens, timeout=300):
     body["max_completion_tokens" if slot["provider"] == "openai" else "max_tokens"] = max_tokens
     headers = {"authorization": f"Bearer {key}"}
     if slot["provider"] == "openrouter":
-        headers.update({"HTTP-Referer": "http://127.0.0.1", "X-Title": "Chorus"})
+        headers.update({"HTTP-Referer": "http://127.0.0.1", "X-Title": "Benchmark Evaluation Harness"})
     j = _post_json(f"{base}/chat/completions", headers, body, timeout)
     choice = (j.get("choices") or [{}])[0]
     content = (choice.get("message") or {}).get("content")
@@ -337,7 +337,7 @@ def job_status(job):
 
 # ------------------------------------------------------------------ http
 class Handler(BaseHTTPRequestHandler):
-    server_version = "Chorus/1.0"
+    server_version = "BenchmarkEvaluationHarness/1.0"
 
     def log_message(self, fmt, *args):  # quiet, and never log bodies (keys)
         pass
@@ -387,7 +387,7 @@ class Handler(BaseHTTPRequestHandler):
                     for fn in job["files"]:
                         z.write(os.path.join(folder, fn), fn)
                 return self._send(200, buf.getvalue(), "application/zip",
-                                  {"content-disposition": 'attachment; filename="chorus-answers.zip"'})
+                                  {"content-disposition": 'attachment; filename="benchmark-answers.zip"'})
             if name in job["files"]:
                 with open(os.path.join(folder, name), "rb") as f:
                     disp = "inline" if "view=1" in self.path else "attachment"
@@ -421,7 +421,7 @@ def main():
     port = int(os.environ.get("PORT", "8765"))
     srv = ThreadingHTTPServer(("127.0.0.1", port), Handler)
     url = f"http://127.0.0.1:{port}"
-    print(f"\n  Phase 0 evaluation harness is running at {url}\n  (Ctrl+C to stop)\n")
+    print(f"\n  Benchmark Evaluation Harness is running at {url}\n  (Ctrl+C to stop)\n")
     if "--no-browser" not in sys.argv:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     try:

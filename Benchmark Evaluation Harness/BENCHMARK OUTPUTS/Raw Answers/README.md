@@ -1,6 +1,6 @@
-# Raw benchmark answers
+# Raw Answers
 
-Unedited model answers to the 5 Phase 0 benchmark questions. One file per model, named for the model that produced it.
+Unedited model answers to the 5 benchmark questions. One file per model, named for the model that produced it.
 
 | File | Model |
 | :-- | :-- |

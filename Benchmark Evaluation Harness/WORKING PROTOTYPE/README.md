@@ -1,13 +1,15 @@
-# Phase 0 model evaluation harness
+# Working prototype
 
-Runs the Phase 0 benchmark questions against up to 10 LLMs and produces **one PDF of answers per model** for the regulator's biologists to review.
+Runs the benchmark questions against up to 10 LLMs and produces **one PDF of answers per model** for the reviewing biologists to read.
+
+This is a working prototype: it has been exercised end to end in demo mode, but not against live provider APIs.
 
 The harness reads the questions from `benchmark_questions.txt`. It sends **one question at a time** to every model in parallel, and the next question starts once every model has answered. Each question is a fresh single-turn call, so a model never sees its earlier answers.
 
 ## Run it
 
 ```bash
-cd "Phase 0 model evaluation harness"
+cd "Benchmark Evaluation Harness/WORKING PROTOTYPE"
 pip install -r requirements.txt     # just reportlab
 python app.py                       # opens http://127.0.0.1:8765
 ```
@@ -51,7 +53,7 @@ Keys are never written to disk or logged. They are sent only to the provider you
 ## Files
 
 ```
-benchmark_questions.txt  the Phase 0 benchmark questions
+benchmark_questions.txt  the benchmark questions
 app.py                   server, question-file parser, provider calls, run scheduling
 pdf_report.py            PDF layout
 static/index.html        web interface
